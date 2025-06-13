@@ -18,3 +18,8 @@ npx prisma db pull
 npx prisma migrate dev --name init (to create tables)
 
 npm install --save @nestjs/swagger swagger-ui-express
+
+
+(also add user details for the task)
+add pagination for tasks, projects and tasks
+add search option for username or userid for users (using only 1 api ) -> uses query parameter  
