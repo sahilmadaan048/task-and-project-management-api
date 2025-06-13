@@ -16,3 +16,5 @@ npx prisma init
 npx prisma generate
 npx prisma db pull 
 npx prisma migrate dev --name init (to create tables)
+
+npm install --save @nestjs/swagger swagger-ui-express

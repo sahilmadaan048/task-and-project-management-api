@@ -18,6 +18,9 @@ export class ProjectsController {
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: 'Project created' })
   create(@Body() dto: CreateProjectDto) {
+    // let userId = dto.userId;
+    // userId = Number(userId);
+    // dto.userId = userId; 
     return this.projectsService.create(dto);
   }
 

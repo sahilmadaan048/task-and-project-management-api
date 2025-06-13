@@ -28,7 +28,7 @@
     @Get()
     @ApiBearerAuth()
     @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles(Role.Admin)
+    // @Roles(Role.Admin)
     @ApiOkResponse({ type: [UserEntity] })
     findAll() {
         return this.usersService.findAll();
