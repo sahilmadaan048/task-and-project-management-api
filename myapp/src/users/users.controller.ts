@@ -1,6 +1,7 @@
     // src/users/users.controller.ts
     import {
-    Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, UseInterceptors
+    Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, UseInterceptors,
+    Query
     } from '@nestjs/common';
     import { UsersService } from './users.service';
     import { UserEntity } from './user.entity';
@@ -12,6 +13,7 @@
     import { ClassSerializerInterceptor } from '@nestjs/common';
     import { ApiTags, ApiBearerAuth, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
     import { CreateUserDto } from './dto/create-user.dto';
+import { UserQueryDto } from './dto/user-query.dto';
 
     @ApiTags('users')
     @Controller('users')
@@ -32,6 +34,14 @@
     @ApiOkResponse({ type: [UserEntity] })
     findAll() {
         return this.usersService.findAll();
+    }
+
+    @Get('search')
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'), RolesGuard)
+    @ApiOkResponse({type: [UserEntity]})
+    findAllQuery(@Query() query: UserQueryDto) {
+        return this.usersService.findAllQuery(query);
     }
 
     @Get(':id')
