@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserQueryDto } from './dto/user-query.dto';
 import { Prisma } from 'generated/prisma';
+import { getPagination, getSorting } from '../utils/pagination';
 
 @Injectable()
 export class UsersService {
@@ -86,6 +87,7 @@ export class UsersService {
       },
     };
   }
+
   async findOne(id: number) {
     const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundException('User not found');

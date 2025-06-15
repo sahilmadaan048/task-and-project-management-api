@@ -3,6 +3,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { RolesGuard } from './auth/roles.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +13,8 @@ async function bootstrap() {
 
   // Global interceptor to apply class-transformer (e.g. @Exclude) on responses
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+
+  app.useGlobalGuards(new RolesGuard(new Reflector()));
 
   // Swagger configuration
   const config = new DocumentBuilder()
