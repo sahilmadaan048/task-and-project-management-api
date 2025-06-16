@@ -92,3 +92,5 @@ export class ProjectsService {
     return this.prisma.project.delete({ where: { id } });
   }
 }
+
+// change the findAllQuery return body for pagination in tasks and projects module
