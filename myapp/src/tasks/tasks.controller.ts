@@ -1,12 +1,14 @@
 // src/tasks/tasks.controller.ts
 import {
-  Controller, Get, Post, Patch, Delete, Body, Param, UseGuards
+  Controller, Get, Post, Patch, Delete, Body, Param, UseGuards,
+  Query
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { TaskQueryDto } from './dto/task-query.dto';
 
 @ApiTags('tasks')
 @Controller('tasks')
@@ -27,6 +29,15 @@ export class TasksController {
   findAll() {
     return this.tasksService.findAll();
   }
+
+  @Get('search')
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: [CreateTaskDto] })
+  findAllQuery(@Query() query: TaskQueryDto) {
+    return this.tasksService.findAllQuery(query);
+  }
+
+
 
   @Get(':id')
   @ApiBearerAuth()

@@ -1,18 +1,20 @@
 // src/projects/projects.controller.ts
 import {
-  Controller, Get, Post, Patch, Delete, Body, Param, UseGuards
+  Controller, Get, Post, Patch, Delete, Body, Param, UseGuards,
+  Query
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiBearerAuth, ApiOkResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { ProjectsQueryDto } from './dto/project-query.dto';
 
 @ApiTags('projects')
 @Controller('projects')
 @UseGuards(AuthGuard('jwt'))
 export class ProjectsController {
-  constructor(private readonly projectsService: ProjectsService) {}
+  constructor(private readonly projectsService: ProjectsService) { }
 
   @Post()
   @ApiBearerAuth()
@@ -29,6 +31,13 @@ export class ProjectsController {
   @ApiOkResponse({ type: [CreateProjectDto] })
   findAll() {
     return this.projectsService.findAll();
+  }
+
+  @Get()
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: [CreateProjectDto] })
+  findAllQuery(@Query() query: ProjectsQueryDto) {
+    return this.projectsService.findAllQuery(query);
   }
 
   @Get(':id')
