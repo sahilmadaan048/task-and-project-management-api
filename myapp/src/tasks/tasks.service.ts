@@ -8,7 +8,7 @@ import { Prisma } from 'generated/prisma';
 
 @Injectable()
 export class TasksService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   create(dto: CreateTaskDto) {
     return this.prisma.task.create({ data: dto });
@@ -22,22 +22,24 @@ export class TasksService {
     const page = parseInt(query.page ?? '1', 10);
     const limit = parseInt(query.limit ?? '2', 10);
 
-    const skip = (page - 1) * limit;  
+    const skip = (page - 1) * limit;
 
     // Search filter for name or email (case-insensitive)
     const where = query.search
       ? {
         OR: [
           {
-            name: {
+            title: {
               contains: query.search,
               mode: Prisma.QueryMode.insensitive,
             },
           },
           {
-            email: {
-              contains: query.search,
-              mode: Prisma.QueryMode.insensitive,
+            user: {
+              name: {
+                contains: query.search,
+                mode: Prisma.QueryMode.insensitive,
+              },
             },
           },
         ],
@@ -55,31 +57,67 @@ export class TasksService {
     const order = rawOrder === 'asc' ? 'asc' : 'desc';
 
     // Fetch users with filters, pagination, and sorting
-    const users = await this.prisma.user.findMany({
+    const tasks = await this.prisma.task.findMany({
       where,
       skip,
       take: limit,
       orderBy: {
         [field]: order,
       },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
     });
 
-    // Get total count for pagination
-    const total = await this.prisma.user.count({ where });
+    // // Get total count for pagination
+    const total = await this.prisma.task.count({ where });
 
-    // Return paginated response
+    // // Return paginated response
     return {
-      data: users,
+      data: tasks,
       meta: {
         total,
         page,
         lastPage: Math.ceil(total / limit),
       },
     };
+
+    // const tasks = await this.prisma.task.findMany({
+    //   where: where,
+    //   take: limit,
+    //   skip: (page - 1) * limit,
+    //   include: {
+    //     user: {
+    //       select: {
+    //         id: true,
+    //         name: true,
+    //         email: true,
+    //       },
+    //     },
+    //   },
+    // });
+
+    // const total = await this.prisma.task.count({ where: { ... } });
+
+    // return {
+    //   data: tasks,
+    //   meta: {
+    //     total,
+    //     page,
+    //     lastPage: Math.ceil(total / limit),
+    //   },
+    // };
+
   }
 
   async findOne(id: number) {
-    const task = await this.prisma.task.findUnique({ where: { id }});
+    const task = await this.prisma.task.findUnique({ where: { id } });
     if (!task) throw new NotFoundException('Task not found');
     return task;
   }
@@ -89,10 +127,10 @@ export class TasksService {
   }
 
   remove(id: number) {
-    return this.prisma.task.delete({ where: { id }});
+    return this.prisma.task.delete({ where: { id } });
   }
 
   async getCommentsByTask(id: number) {
-    return this.prisma.comment.findMany({ where: { taskId: id }});
+    return this.prisma.comment.findMany({ where: { taskId: id } });
   }
 }

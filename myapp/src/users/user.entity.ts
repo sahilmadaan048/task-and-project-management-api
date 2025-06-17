@@ -1,6 +1,6 @@
-// src/users/user.entity.ts
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+import { Role } from 'src/auth/role.enum'; // <-- adjust path as needed
 
 export class UserEntity {
   id: number;
@@ -14,6 +14,9 @@ export class UserEntity {
   @Exclude()
   @ApiProperty({ example: 'karansingh059', description: 'Email Password for this user' })
   password: string;
+
+  @ApiProperty({ example: Role.Admin, enum: Role, description: 'Role of the user (admin/user)' })
+  role: Role;
 
   constructor(partial: Partial<UserEntity>) {
     Object.assign(this, partial);

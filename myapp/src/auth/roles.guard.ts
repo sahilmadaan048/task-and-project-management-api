@@ -1,11 +1,11 @@
 // src/auth/roles.guard.ts
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from './roles.decorator';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(private reflector: Reflector) { }
 
   canActivate(context: ExecutionContext): boolean {
     const requiredRoles = this.reflector.getAllAndOverride<string[]>(
@@ -15,7 +15,17 @@ export class RolesGuard implements CanActivate {
     if (!requiredRoles) {
       return true;
     }
-    const { user } = context.switchToHttp().getRequest();
-    return requiredRoles.includes(user?.role);
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
+
+
+    // 🔒 Defensive check to prevent undefined error
+    if (!user || !user.role) return false;
+
+    if (!requiredRoles.includes(user.role)) {
+      throw new ForbiddenException('Forbidden resource');
+    }
+
+    return true;
   }
 }
